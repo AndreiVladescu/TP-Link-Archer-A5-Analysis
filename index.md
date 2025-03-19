@@ -83,3 +83,5 @@ Analyzing this library using Ghidra, we find a function `dm_decryptFile`, that m
 <img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/des_key.png"  width="40%">
 
 If decrypting this using DES, we find that it decrypts using ECB encryption scheme. In the decrypted `reduced_data_model.xml` file can be found the configuration for the network, firewall, Wi-Fi, WAN and ACL, and in the `default_config.xml`, you guessed it, the default configuration for the router.
+
+<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/cyberchef_ecb_des_decrypt.png"  width="80%">
