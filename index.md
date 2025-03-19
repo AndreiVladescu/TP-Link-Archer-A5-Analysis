@@ -46,7 +46,7 @@ The top of the board reveals the main SoC Mediatek MT7628AN, the ESMT M14D512163
 
 The secondary IC handles the 5GHz band, while the primary SoC handles the 2.4GHz band.
 
-<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/frontboard.jpeg"  width="60%">
+<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/frontboard.jpeg"  width="80%">
 	
 The router came without the EMFI shields soldered on the PCB.
 
@@ -57,7 +57,7 @@ The router came without the EMFI shields soldered on the PCB.
   
  The backside of the board reveals an 8MB eFeon QH64A flash IC.
 
-<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/backboard.jpeg"  width="50%">
+<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/backboard.jpeg"  width="60%">
 
   <img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/flash.jpeg"  width="20%">
 
@@ -76,7 +76,7 @@ Cracking the MD5 hash of the `admin` user's password reveals `1234`.
 
 While the password can be easily revealed, there are 2 encrypted xml files inside the `/etc` folder, the `reduced_data_model.xml`  and `default_config.xml` files. When searching for the names of these files for binaries that use them, `libcmm.so` comes up. 
 
-<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/libcmm_dm_decryptFile.png"  width="60%">
+<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/libcmm_dm_decryptFile.png"  width="80%">
 
 Analyzing this library using Ghidra, we find a function `dm_decryptFile`, that makes use of another function caled `cen_desMinDo`.  The `memcpy` function call gives the 8 byte key away, hinting at a possible DES key.
 
@@ -84,4 +84,4 @@ Analyzing this library using Ghidra, we find a function `dm_decryptFile`, that m
 
 If decrypting this using DES, we find that it decrypts using ECB encryption scheme. In the decrypted `reduced_data_model.xml` file can be found the configuration for the network, firewall, Wi-Fi, WAN and ACL, and in the `default_config.xml`, you guessed it, the default configuration for the router.
 
-<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/cyberchef_ecb_des_decrypt.png"  width="80%">
+<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/cyberchef_ecb_des_decrypt.png"  width="100%">
