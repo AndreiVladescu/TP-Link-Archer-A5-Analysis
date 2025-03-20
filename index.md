@@ -117,6 +117,17 @@ Following the blood trail, we can find the password for the dropbear user in the
 
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_pwd.png" width="60%" style="margin-right: 50px;">
 
+> username:admin 
+> password:21232f297a57a5a743894a0e4a801fc3
+
 Going back to the libraries, we can find in `libcmm.so` references to the `dropbear` binaries. 
 
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_ghidra.png" width="75%" style="margin-right: 50px;">
+
+If you try to login with ssh on the router, it won't work. If you look inside the `dropbear_func` before being enthusiastic and trying with that hex string, the `md5MakeDigest` function gives a hint about that being an md5 hash. Trying it on crackstation gives the password `admin`.
+
+ <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_password_crack.png" width="90%" style="margin-right: 50px;">
+ 
+Trying it again:
+
+ <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_error.png" width="50%" style="margin-right: 50px;">
