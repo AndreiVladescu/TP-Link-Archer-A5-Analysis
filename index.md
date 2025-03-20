@@ -1,26 +1,11 @@
 
 <link  rel="shortcut icon"  type="image/x-icon"  href="icon.ico">
-
-  
-  
-
 <figure>  <img
-
-  
-
 src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/banner.jpeg"
-
-  
-
 alt="Exploiting the router"
-
-  
-
 >  </figure>
 
   
-  
-
 # Introduction
 
 The TP-Link Archer A5 is a cheap router from 2020. According to [OpenWrt Wiki](https://openwrt.org/toh/tp-link/archer_a5_v5), it is identical to the TP-Link C50 v5.
@@ -76,7 +61,7 @@ Cracking the MD5 hash of the `admin` user's password reveals `1234`.
 
 While the password can be easily revealed, there are 2 encrypted xml files inside the `/etc` folder, the `reduced_data_model.xml`  and `default_config.xml` files. When searching for the names of these files for binaries that use them, `libcmm.so` comes up. 
 
-<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/libcmm_dm_decryptFile.png"  width="60%">
+<img  src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/libcmm_dm_decryptFile.png"  width="70%">
 
 Analyzing this library using Ghidra, we find a function `dm_decryptFile`, that makes use of another function caled `cen_desMinDo`.  The `memcpy` function call gives the 8 byte key away, hinting at a possible DES key.
 
@@ -94,4 +79,39 @@ The credentials for the management interface were there too, along with evidence
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/login_credentials2.png" width="55%">
  
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/archer_c50_confusion.png" width="75%" style="margin-right: 50px;">
+
+
+# Analyzing the boot messages
   
+  After plugging a USB to UART adapter and powering on the router, we can see characteristics of the boot process, such as the `U-Boot bootloader 4.3.0.0`, `Linux version 2.6.36` or flash memory type `EN25Q64(1c 30171c30) (8192 Kbytes)`. Also, if the firmware was not captured before, we can detect some details of the file system `root=/dev/mtdblock2 rootfstype=squashf`.
+  
+There are also 7 partitions that are interesting:
+
+> Creating 7 MTD partitions on "raspi":
+> 0x000000030000-0x000000050000 : "boot" 
+> 0x000000050000-0x000000190000 : "kernel"
+> 0x000000190000-0x0000007c0000 : "rootfs" 
+> mtd: partition "rootfs" set to be root filesystem
+>  0x0000007c0000-0x0000007d0000 : "config"
+> 0x0000007d0000-0x0000007e0000 : "romfile"
+> 0x0000007e0000-0x0000007f0000 : "rom" 
+> 0x0000007f0000-0x000000800000 : "radio"
+
+And also some `dropbear` configuration messages:
+
+> [ util_execSystem ] 141:  prepareDropbear cmd is "dropbearkey -t rsa -f /var/tmp/dropbear/dropbear_rsa_host_key"
+> Will output 1024 bit rsa secret key to '/var/tmp/dropbear/dropbear_rsa_host_key' Generating key, this may take a while... [ util_execSystem ] 141:  prepareDropbear cmd is
+> "dropbearkey -t dss -f /var/tmp/dropbear/dropbear_dss_host_key" 
+> Will output 1024 bit dss secret key to '/var/tmp/dropbear/dropbear_dss_host_key'
+
+# Analyzing the live file system
+
+Following the blood trail, we can find the password for the dropbear user in the `/var/tmp/drpopbear/` folder.
+ <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_pwd.png" width="60%" style="margin-right: 50px;">
+
+We can also find WiFi connection data in `/var/Wireless/RT2860AP/RT2860AT.dat`. 
+ <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/wpa_psk.png" width="40%" style="margin-right: 50px;">
+
+The bonus in this file is the `WscVendorPinCode`, which is `94527483`, the same as on the back of the device.
+
+The other file, `RT2860AP5G.dat` hold the default password for the 5G AP, which is still `94527483`.
