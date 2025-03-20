@@ -80,6 +80,11 @@ The credentials for the management interface were there too, along with evidence
  
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/archer_c50_confusion.png" width="75%" style="margin-right: 50px;">
 
+We can also find WiFi connection data in `/var/Wireless/RT2860AP/RT2860AT.dat`. 
+ <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/wpa_psk.png" width="40%" style="margin-right: 50px;">
+
+The bonus in this file is the `WscVendorPinCode`, which is `94527483`, the same as on the back of the device.
+The other file, `RT2860AP5G.dat` hold the default password for the 5G AP, which is still `94527483`.
 
 # Analyzing the boot messages
   
@@ -104,14 +109,14 @@ And also some `dropbear` configuration messages:
 > "dropbearkey -t dss -f /var/tmp/dropbear/dropbear_dss_host_key" 
 > Will output 1024 bit dss secret key to '/var/tmp/dropbear/dropbear_dss_host_key'
 
+
+
 # Analyzing the live file system
 
 Following the blood trail, we can find the password for the dropbear user in the `/var/tmp/drpopbear/` folder.
+
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_pwd.png" width="60%" style="margin-right: 50px;">
 
-We can also find WiFi connection data in `/var/Wireless/RT2860AP/RT2860AT.dat`. 
- <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/wpa_psk.png" width="40%" style="margin-right: 50px;">
+Going back to the libraries, we can find in `libcmm.so` references to the `dropbear` binaries. 
 
-The bonus in this file is the `WscVendorPinCode`, which is `94527483`, the same as on the back of the device.
-
-The other file, `RT2860AP5G.dat` hold the default password for the 5G AP, which is still `94527483`.
+ <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_ghidra.png" width="75%" style="margin-right: 50px;">
