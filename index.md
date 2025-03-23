@@ -131,3 +131,6 @@ If you try to login with ssh on the router, it won't work. If you look inside th
 Trying it again:
 
  <img src="https://raw.githubusercontent.com/AndreiVladescu/TP-Link-Archer-A5-Analysis/refs/heads/main/images/dropbear_error.png" width="50%" style="margin-right: 50px;">
+
+This is proof that even if we know the password we need the private RSA key. We could try to modify the RSA public key with a controlled RSA private/public key pair, but then we'd need to repack the firmware and load it on the machine, since the router doesn't automatically save the RAM contents into the compressed flash memory. 
+At that point, you could try to install a better operating system, such as an unmodified OpenWRT to re-use the router.
